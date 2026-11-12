@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Result - Disease Detection from Symptoms</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body class="results-page">
+<div class="container results-container">
+<header class="app-header">
+<h1>Analysis Result</h1>
+</header>
+{% if error %}
+<div class="alert alert-error">{{ error }}</div>
+<a href="/" class="btn-secondary">Back to Home</a>
+{% else %}
+<section class="result-hero">
+<p class="result-label">Possible Condition</p>
+<h2 class="disease-name">{{ disease }}</h2>
+{% if confidence is not none %}
+<p class="confidence">
+Model confidence: <strong>{{ confidence }}%</strong>
+<span class="confidence-note">(a statistical estimate, not medical certainty)</span>
+</p>
+{% endif %}
+{% if uncertainty %}
+<p class="alert alert-warning">The available symptoms do not identify one condition reliably. The alternatives below are possibilities, not a diagnosis.</p>
+{% endif %}
+<p class="selected-symptoms">
+<strong>Symptoms you entered:</strong> {{ selected_symptoms | join(', ') }}
+</p>
+</section>
+{% if alternatives %}
+<section class="result-section alternatives-section">
+<h3>Other possible matches</h3>
+<ul>
+{% for alternative in alternatives %}
+<li>{{ alternative.disease }} ({{ alternative.probability }}%)</li>
+{% endfor %}
+</ul>
+</section>
+{% endif %}
+<section class="result-section">
+<h3>About this condition</h3>
+<p>{{ info.description }}</p>
+</section>
+<section class="result-section">
+<h3>Common symptoms</h3>
+<ul>
+{% for s in info.common_symptoms %}
+<li>{{ s }}</li>
+{% endfor %}
+</ul>
+</section>
+<section class="result-section">
+<h3>General precautions</h3>
+<ul>
+{% for p in info.precautions %}
+<li>{{ p }}</li>
+{% endfor %}
+</ul>
+<p><strong>Self-care:</strong> {{ info.self_care }}</p>
+</section>
+<div class="disclaimer">
+<strong>Disclaimer:</strong> {{ disclaimer }}
+</div>
+<a href="/" class="btn-secondary">Check Different Symptoms</a>
+{% endif %}
+</div>
+</body>
+</html>

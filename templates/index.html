@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disease Detection from Symptoms</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header class="app-header">
+            <h1>🏥 Disease Detection System</h1>
+            <p class="subtitle">Describe your symptoms to get insights about possible conditions.</p>
+        </header>
+
+        {% if error %}
+        <div class="alert alert-error">
+            <span class="alert-icon">⚠️</span>
+            {{ error }}
+        </div>
+        {% endif %}
+
+        <!-- Tab Navigation -->
+        <div class="tabs-container">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="text-input">
+                    <span class="tab-icon">💬</span>
+                    Describe Symptoms
+                </button>
+                <button class="tab-btn" data-tab="checkbox-input">
+                    <span class="tab-icon">☑️</span>
+                    Select Symptoms
+                </button>
+            </div>
+        </div>
+
+        <!-- Tab 1: Text-Based Input -->
+        <div class="tab-content active" id="text-input-tab">
+            <div class="input-section">
+                <label for="symptom-text" class="section-label">
+                    Describe your symptoms in your own words
+                </label>
+                <textarea
+                    id="symptom-text"
+                    placeholder="Example: I have a high fever, severe cough, and my head is throbbing. Also feeling very tired and having trouble breathing..."
+                    class="symptom-textarea"
+                    rows="5"
+                ></textarea>
+
+                <div class="text-input-controls">
+                    <label class="checkbox-label">
+                        <input type="checkbox" id="include-common" checked>
+                        Include common symptoms (fever, headache, etc.)
+                    </label>
+                </div>
+
+                <button class="btn-primary" id="analyze-text-btn">
+                    <span>🔍 Analyze from Text</span>
+                </button>
+
+                <div id="parse-result" class="parse-result hidden">
+                    <div class="result-header">
+                        <h3>Extracted Symptoms</h3>
+                        <button type="button" class="btn-close" onclick="closeParse()">&times;</button>
+                    </div>
+                    <div id="extracted-symptoms" class="extracted-list"></div>
+                    <div id="common-symptoms-warning" class="common-warning hidden"></div>
+                    <button class="btn-primary" id="predict-text-btn">
+                        <span>🩺 Get Prediction</span>
+                    </button>
+                </div>
+
+                <div id="text-loading" class="loading hidden">
+                    <div class="spinner"></div>
+                    <p>Analyzing your symptoms...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Tab 2: Checkbox-Based Input -->
+        <div class="tab-content" id="checkbox-input-tab">
+            <form action="/predict" method="POST" class="symptom-form">
+                <label for="symptom-search" class="section-label">
+                    ☑️ Select your symptoms from the list
+                </label>
+                <input
+                    type="text"
+                    id="symptom-search"
+                    placeholder="Search symptoms (e.g. fever, cough, sore throat)..."
+                    autocomplete="off"
+                    class="search-input"
+                >
+
+                <div class="symptom-count">
+                    <span id="selected-count">0</span> symptom(s) selected
+                </div>
+
+                <div class="symptom-grid" id="symptom-grid">
+                    {% for symptom in symptoms %}
+                    <label class="symptom-chip" data-label="{{ symptom.label | lower }}">
+                        <input type="checkbox" name="symptoms" value="{{ symptom.key }}">
+                        <span>{{ symptom.label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+
+                <div class="form-actions">
+                    <button type="button" class="btn-secondary" onclick="clearAllSymptoms()">
+                        Clear All
+                    </button>
+                    <button type="submit" class="btn-primary">
+                        <span>🩺 Analyze Selected Symptoms</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="disclaimer">
+            <strong>⚠️ Medical Disclaimer:</strong> This tool is for educational purposes only 
+            and is not a medical diagnosis. Please consult a qualified healthcare professional 
+            for proper diagnosis and treatment.
+        </div>
+    </div>
+
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>
